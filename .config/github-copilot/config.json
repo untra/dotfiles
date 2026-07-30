@@ -1,0 +1,12 @@
+{
+  "execute_commands": {
+    "ask": [
+      "git commit*"
+    ],
+    "deny": [
+      "git revert*",
+      "git checkout*",
+      "git rebase*"
+    ]
+  }
+}

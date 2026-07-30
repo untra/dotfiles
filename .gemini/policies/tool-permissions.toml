@@ -1,0 +1,13 @@
+# Deny destructive Git operations
+[[rule]]
+toolName = "run_shell_command"
+commandPrefix = ["git revert", "git checkout", "git rebase"]
+decision = "deny"
+priority = 100
+
+# Require explicit confirmation before committing
+[[rule]]
+toolName = "run_shell_command"
+commandPrefix = ["git commit"]
+decision = "ask"
+priority = 90

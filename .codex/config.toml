@@ -1,0 +1,15 @@
+# Set baseline interactive prompt mode
+approval_policy = "on-request"
+
+[permissions.exec]
+# Disallow execution of high-risk Git operations
+deny = [
+  "git revert*",
+  "git checkout*",
+  "git rebase*"
+]
+
+# Force explicit user approval for commits
+ask = [
+  "git commit*"
+]
