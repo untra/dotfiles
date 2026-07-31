@@ -1,0 +1,59 @@
+# Codex exec-policy rules (Starlark).
+# decision: "allow" | "prompt" | "forbidden"  — most restrictive match wins.
+# Validate with:
+#   codex execpolicy check --pretty --rules .codex/rules/default.rules -- git commit -m x
+
+# --- High-risk git operations: blocked outright ---
+
+prefix_rule(
+    pattern = ["git", "revert"],
+    decision = "forbidden",
+    justification = "Creates history-altering commits. Run `git revert` yourself if you want it.",
+    match = [["git", "revert", "HEAD"]],
+    not_match = [["git", "log"]],
+)
+
+prefix_rule(
+    pattern = ["git", "checkout"],
+    decision = "forbidden",
+    justification = "Can silently discard uncommitted work. Run `git checkout` yourself.",
+    match = [["git", "checkout", "main"], ["git", "checkout", "--", "file.txt"]],
+    not_match = [["git", "status"]],
+)
+
+# git switch and git restore are the modern halves of git checkout. Blocking only
+# checkout would leave the same destructive behavior reachable under a newer name.
+
+prefix_rule(
+    pattern = ["git", "switch"],
+    decision = "forbidden",
+    justification = "Changes branches and can discard uncommitted work. Run `git switch` yourself.",
+    match = [["git", "switch", "main"], ["git", "switch", "-c", "feature"]],
+    not_match = [["git", "status"]],
+)
+
+prefix_rule(
+    pattern = ["git", "restore"],
+    decision = "forbidden",
+    justification = "Overwrites working-tree files from the index or a commit, discarding edits. Run `git restore` yourself.",
+    match = [["git", "restore", "file.txt"], ["git", "restore", "--staged", "file.txt"]],
+    not_match = [["git", "status"]],
+)
+
+prefix_rule(
+    pattern = ["git", "rebase"],
+    decision = "forbidden",
+    justification = "Rewrites history and is hard to undo. Run `git rebase` yourself.",
+    match = [["git", "rebase", "-i", "main"]],
+    not_match = [["git", "merge", "main"]],
+)
+
+# --- Commits require explicit approval ---
+
+prefix_rule(
+    pattern = ["git", "commit"],
+    decision = "prompt",
+    justification = "Commits should be reviewed by a human before they land.",
+    match = [["git", "commit", "-m", "wip"]],
+    not_match = [["git", "add", "-A"]],
+)

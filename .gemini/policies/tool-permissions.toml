@@ -1,7 +1,7 @@
 # Deny destructive Git operations
 [[rule]]
 toolName = "run_shell_command"
-commandPrefix = ["git revert", "git checkout", "git rebase"]
+commandPrefix = ["git revert", "git checkout", "git rebase", "git switch", "git restore"]
 decision = "deny"
 priority = 100
 

@@ -6,7 +6,9 @@
     "deny": [
       "git revert*",
       "git checkout*",
-      "git rebase*"
+      "git rebase*",
+      "git switch*",
+      "git restore*"
     ]
   }
 }

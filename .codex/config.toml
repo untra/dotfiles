@@ -1,15 +1,20 @@
 # Set baseline interactive prompt mode
 approval_policy = "on-request"
 
-[permissions.exec]
-# Disallow execution of high-risk Git operations
-deny = [
-  "git revert*",
-  "git checkout*",
-  "git rebase*"
-]
+[projects."/Users/samuelvolin/Documents/untra/dotfiles"]
+trust_level = "trusted"
 
-# Force explicit user approval for commits
-ask = [
-  "git commit*"
+[tui]
+status_line = [
+    "current-dir",
+    "git-branch",
+    "branch-changes",
+    "thread-title",
+    "model-with-reasoning",
+    "codex-version",
+    "context-used",
+    "total-input-tokens",
+    "total-output-tokens",
+    "used-tokens",
 ]
+status_line_use_colors = true

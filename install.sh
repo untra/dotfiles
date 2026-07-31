@@ -378,14 +378,28 @@ install_omz
 # summary live inside it. `set -e` still aborts on error and the subshell's
 # status is the pipeline's status, so failures propagate back to Coder.
 
+# -type l as well as -type f: the repo itself contains symlinks (.codex/AGENTS.md
+# -> ../.claude/CLAUDE.md, so Codex and Claude read one file). Without this they
+# are invisible here — find does not follow them and -type f does not match them.
+# They are then linked like any other entry, giving $HOME a link to a link, which
+# the kernel resolves transparently.
 find "$SRC" \( -name .git -o -name .github -o -name node_modules \) -prune \
-	-o -type f -print | {
+	-o \( -type f -o -type l \) -print | {
 	linked=0 relinked=0 unchanged=0 merged=0 blocks=0 backed_up=0 skipped=0
 
 	while IFS= read -r src; do
 		rel=${src#"$SRC"/}
 
 		if is_excluded "$rel"; then
+			skipped=$((skipped + 1))
+			continue
+		fi
+
+		# A repo symlink pointing at nothing would propagate a dangling link into
+		# $HOME, which looks installed in a directory listing but resolves to no
+		# content. Catch it here rather than shipping it.
+		if [ -L "$src" ] && [ ! -e "$src" ]; then
+			warn "$rel is a symlink to a missing target; skipping."
 			skipped=$((skipped + 1))
 			continue
 		fi
@@ -433,8 +447,11 @@ find "$SRC" \( -name .git -o -name .github -o -name node_modules \) -prune \
 			# A real file or directory. This is also the repair path for tools
 			# that persist config with write-temp-then-rename(2), which replaces
 			# our symlink with a private regular file.
+			# Never merge into a symlinked repo entry: merge_json rewrites $src
+			# with mv(1), which replaces the link with a regular file and
+			# silently detaches it from whatever it pointed at.
 			case $base in
-			*.json) merge_json "$src" "$dst" || : ;;
+			*.json) [ -L "$src" ] || merge_json "$src" "$dst" || : ;;
 			esac
 			backup_path "$dst" "pre-existing file replaced by symlink"
 		fi
