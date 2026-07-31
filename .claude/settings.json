@@ -14,7 +14,7 @@
     },
     "statusLine": {
         "type": "command",
-        "command": "ccstatusline",
+        "command": "~/.claude/statusline-command.sh",
         "padding": 0,
         "refreshInterval": 10
     }
