@@ -6,6 +6,7 @@
       "Bash(git commit*)"
     ],
     "deny": [
+      "Bash(git stash*)",
       "Bash(git revert*)",
       "Bash(git checkout*)",
       "Bash(git rebase*)",
