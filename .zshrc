@@ -1,7 +1,7 @@
 #
 # .zshrc — sourced from a managed block in $HOME/.zshrc, not symlinked.
 # See install.sh for why (image-provided rc content has to survive).
-#
+CLAUDE_CODE_DISABLE_MOUSE_CLICKS=1
 
 # Path to your oh-my-zsh installation. install.sh puts it here; the parameter
 # expansion lets a workspace image that already installed it elsewhere win.
